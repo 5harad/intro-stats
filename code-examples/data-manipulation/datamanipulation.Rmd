@@ -1,0 +1,106 @@
+---
+title: "Data Manipulation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Get printr with
+# install.packages(
+#   'printr',
+#   type = 'source',
+#   repos = c('http://yihui.name/xran', 'http://cran.rstudio.com')
+# )
+library(printr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data manipulation in `R` 
+
+```{r preamble, message=FALSE, warning=FALSE}
+library(tidyverse)
+load('../data/sqf.Rdata')
+head(hitrate_by_location)
+```
+
+## Filter
+```{r}
+hitrate_by_location %>%
+  filter(precinct == 5)
+```
+
+## Select
+```{r}
+hitrate_by_location %>%
+  select(precinct, count) %>%
+  head
+```
+
+
+## Transform
+```{r}
+hitrate_by_location %>%
+  mutate(more_black=ifelse(black > white, TRUE, FALSE)) %>%
+  head
+```
+  
+## Aggregate
+```{r}
+hitrate_by_location %>%
+  mutate(more_black=ifelse(black > white, TRUE, FALSE)) %>%
+  summarize(high_black_rate=mean(more_black))
+```
+
+
+## Sort
+```{r}
+hitrate_by_location %>%
+  arrange(count) %>%
+  head
+```
+
+
+## Group-wise operations
+```{r}
+hitrate_by_location %>% 
+  group_by(location.housing) %>%
+  summarize(hit_rate_black=mean(black), hit_rate_white=mean(white))
+
+hitrate_by_location %>% 
+  group_by(precinct, location.housing) %>%
+  summarize(hit_rate_black=mean(black), hit_rate_white=mean(white)) %>%
+  head
+```
+
+
+## Joins
+```{r}
+users <- data.frame(
+  user=c(23, 789, 234, 7, 26, 567, 2),
+  sex=c('male', 'female', 'female', 'male', 'male', 'female', 'female')
+)
+
+activity <- data.frame(
+  user=c(23, 789, 234, 7, 2, 8),
+  activity=c(3, 2, 1, 1, 1, 3)
+)
+
+users
+activity
+```
+
+### Left join
+```{r}
+left_join(users, activity)
+```
+
+### Inner join
+```{r}
+inner_join(users, activity)
+```
+
+### Full (outer) join
+```{r}
+full_join(users, activity)
+```
+
+
